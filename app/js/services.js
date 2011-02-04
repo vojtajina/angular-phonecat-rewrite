@@ -1,23 +1,44 @@
-/* http://docs.angularjs.org/#!angular.service */
-
-/**
- * App service which is responsible for the main configuration of the app.
- */
-angular.service('myAngularApp', function($route, $location, $window) {
-
-  $route.when('/view1', {template: 'partials/partial1.html', controller: MyCtrl1});
-  $route.when('/view2', {template: 'partials/partial2.html', controller: MyCtrl2});
-
-  var self = this;
-
+angular.service('phoneCatApp', function($route, $location, $resource, $window) {
+  this.$route = $route;
+  $route.when('/phones/', {template:'partials/catalog.html', controller:CatalogCtrl});
+  $route.when('/phones/:phoneId', {template:'partials/detail.html', controller:DetailCtrl});
   $route.onChange(function() {
     if ($location.hash === '') {
-      $location.updateHash('/view1');
-      self.$eval();
+      $location.updateHash('/phones/');
+      this.$eval();
     } else {
       $route.current.scope.params = $route.current.params;
-      $window.scrollTo(0,0);
+      $window.scrollTo(0, 0);
     }
   });
 
-}, {$inject:['$route', '$location', '$window'], $eager: true});
+  this.Phone = $resource('/app/phones/:phoneId.json');
+
+}, {$inject: ['$route', '$location', '$resource', '$window'], $eager: true});
+
+
+angular.service('favorites', function($cookieStore) {
+  return {
+    has: function(phoneId) {
+      return !!($cookieStore.get('favorites') || {})[phoneId];
+    },
+    add: function(phoneId) {
+      var favorites = $cookieStore.get('favorites') || {};
+      favorites[phoneId] = true;
+      $cookieStore.put('favorites', favorites);
+    },
+    remove: function(phoneId) {
+      var favorites = $cookieStore.get('favorites') || {};
+      delete favorites[phoneId];
+      $cookieStore.put('favorites', favorites);
+    },
+    list: function() {
+      var list = [];
+      angular.forEach($cookieStore.get('favorites') || {}, function(value, key) {
+        list.push(key);
+      });
+      list.sort();
+      return list;
+    }
+  };
+}, {$inject: ['$cookieStore']});

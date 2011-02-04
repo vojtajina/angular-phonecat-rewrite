@@ -1,29 +1,58 @@
-/* jasmine specs for controllers go here */
-
-describe('MyCtrl1', function(){
-  var myCtrl1;
-
-  beforeEach(function(){
-    myCtrl1 = new MyCtrl1();
-  });
-
-
-  it('should ....', function() {
-    //spec body
+beforeEach(function() {
+  this.addMatchers({
+    toEqualData: function(expected) {
+      return angular.equals(this.actual, expected);
+    }
   });
 });
 
+describe('CatalogCtrl', function() {
+  var rootScope, catalogCtrl, $browser;
 
-describe('MyCtrl2', function(){
-  var myCtrl2;
+  beforeEach(function() {
+    rootScope = angular.scope();
+    $browser = rootScope.$service('$browser');
+    $browser.xhr.expectGET('/app/phones/.json').respond([
+      {id:'phone1', name:'Phone One', imageUrl:'http://img/url', snippet:'phone one snippet'},
+      {id:'phone2', name:'Phone Two', imageUrl:'http://img/url', snippet:'phone two snippet'}
+    ]);
 
-
-  beforeEach(function(){
-    myCtrl2 = new MyCtrl2();
+    catalogCtrl = rootScope.$new(CatalogCtrl);
+    $browser.xhr.flush();
   });
 
+  it('should load phones', function() {
+    expect(catalogCtrl.phones).toEqualData([
+      {id: 'phone1', name: 'Phone One', imageUrl: 'http://img/url', snippet: 'phone one snippet'},
+      {id: 'phone2', name: 'Phone Two', imageUrl: 'http://img/url', snippet: 'phone two snippet'}
+    ]);
+  });  
+});
 
-  it('should ....', function() {
-    //spec body
+describe('DetailCtrl', function() {
+  var rootScope, detailCtrl, $browser;
+
+  beforeEach(function() {
+    rootScope = angular.scope();
+    rootScope.params = {phoneId: 'phone1'};
+
+    $browser = rootScope.$service('$browser');
+    $browser.xhr.expectGET('/app/phones/.json').respond();
+    $browser.xhr.expectGET('/app/phones/phone1.json').respond({
+      id: 'phone1',
+      name: 'Phone One',
+      description: 'Shiny phone with nice display.'
+    });
+
+    detailCtrl = rootScope.$new(DetailCtrl);
+    $browser.xhr.flush();
+  });
+
+  it('should load phone', function() {
+    expect(detailCtrl.phone).toEqualData({
+      id: 'phone1',
+      name: 'Phone One',
+      description: 'Shiny phone with nice display.'
+    });
   });
 });
