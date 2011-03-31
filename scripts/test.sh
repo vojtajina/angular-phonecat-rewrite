@@ -3,7 +3,7 @@
 base_dir=`dirname $0`
 
 tests=$1
-if [[ $tests = "" ]]; then
+if [ "$tests" = "" ]; then
   tests="all"
 fi
 
