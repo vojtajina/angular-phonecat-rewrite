@@ -91,8 +91,8 @@ function MockBrowser() {
     self.pollFns.push(
       function() {
         if (self.lastUrl != self.url) {
+          self.lastUrl = self.url;
           listener();
-          self.lastUrl == self.url
         }
       }
     );
@@ -101,28 +101,27 @@ function MockBrowser() {
   };
 
 
-  self.xhr = function(method, url, data, callback) {
-    if (angular.isFunction(data)) {
-      callback = data;
-      data = null;
-    }
+  self.xhr = function(method, url, data, callback, headers) {
+    headers = headers || {};
     if (data && angular.isObject(data)) data = angular.toJson(data);
     if (data && angular.isString(data)) url += "|" + data;
     var expect = expectations[method] || {};
-    var response = expect[url];
-    if (!response) {
-      throw {
-        message: "Unexpected request for method '" + method + "' and url '" + url + "'.",
-        name: "Unexpected Request"
-      };
+    var expectation = expect[url];
+    if (!expectation) {
+      throw new Error("Unexpected request for method '" + method + "' and url '" + url + "'.");
     }
     requests.push(function(){
-      callback(response.code, response.response);
+      angular.forEach(expectation.headers, function(value, key){
+        if (headers[key] !== value) {
+          throw new Error("Missing HTTP request header: " + key + ": " + value);
+        }
+      });
+      callback(expectation.code, expectation.response);
     });
   };
   self.xhr.expectations = expectations;
   self.xhr.requests = requests;
-  self.xhr.expect = function(method, url, data) {
+  self.xhr.expect = function(method, url, data, headers) {
     if (data && angular.isObject(data)) data = angular.toJson(data);
     if (data && angular.isString(data)) url += "|" + data;
     var expect = expectations[method] || (expectations[method] = {});
@@ -132,7 +131,7 @@ function MockBrowser() {
           response = code;
           code = 200;
         }
-        expect[url] = {code:code, response:response};
+        expect[url] = {code:code, response:response, headers: headers || {}};
       }
     };
   };
@@ -142,6 +141,10 @@ function MockBrowser() {
   self.xhr.expectPUT    = angular.bind(self, self.xhr.expect, 'PUT');
   self.xhr.expectJSON   = angular.bind(self, self.xhr.expect, 'JSON');
   self.xhr.flush = function() {
+    if (requests.length == 0) {
+      throw new Error("No xhr requests to be flushed!");
+    }
+
     while(requests.length) {
       requests.pop()();
     }
