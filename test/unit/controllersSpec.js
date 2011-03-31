@@ -1,58 +1,54 @@
-beforeEach(function() {
-  this.addMatchers({
-    toEqualData: function(expected) {
-      return angular.equals(this.actual, expected);
-    }
-  });
-});
-
-describe('CatalogCtrl', function() {
-  var rootScope, catalogCtrl, $browser;
-
+describe('controller', function() {
+  var ctrl, scope, browser, response;
   beforeEach(function() {
-    rootScope = angular.scope();
-    $browser = rootScope.$service('$browser');
-    $browser.xhr.expectGET('/app/phones/.json').respond([
-      {id:'phone1', name:'Phone One', imageUrl:'http://img/url', snippet:'phone one snippet'},
-      {id:'phone2', name:'Phone Two', imageUrl:'http://img/url', snippet:'phone two snippet'}
-    ]);
-
-    catalogCtrl = rootScope.$new(CatalogCtrl);
-    $browser.xhr.flush();
-  });
-
-  it('should load phones', function() {
-    expect(catalogCtrl.phones).toEqualData([
-      {id: 'phone1', name: 'Phone One', imageUrl: 'http://img/url', snippet: 'phone one snippet'},
-      {id: 'phone2', name: 'Phone Two', imageUrl: 'http://img/url', snippet: 'phone two snippet'}
-    ]);
-  });  
-});
-
-describe('DetailCtrl', function() {
-  var rootScope, detailCtrl, $browser;
-
-  beforeEach(function() {
-    rootScope = angular.scope();
-    rootScope.params = {phoneId: 'phone1'};
-
-    $browser = rootScope.$service('$browser');
-    $browser.xhr.expectGET('/app/phones/.json').respond();
-    $browser.xhr.expectGET('/app/phones/phone1.json').respond({
-      id: 'phone1',
-      name: 'Phone One',
-      description: 'Shiny phone with nice display.'
+    this.addMatchers({
+      toEqualAsynchronousData: function(expected) {
+        browser.xhr.flush();
+        return angular.equals(this.actual, expected);
+      }
     });
 
-    detailCtrl = rootScope.$new(DetailCtrl);
-    $browser.xhr.flush();
+    scope = angular.scope();
+    browser = scope.$service('$browser');
   });
 
-  it('should load phone', function() {
-    expect(detailCtrl.phone).toEqualData({
-      id: 'phone1',
-      name: 'Phone One',
-      description: 'Shiny phone with nice display.'
+  describe('main', function() {});
+
+  describe('detail', function() {
+    beforeEach(function() {
+      scope.params = {phoneId: 2};
+      response = {id: 2, name: 'Phone 2'};
+      browser.xhr.expectGET('/app/phones/2.json').respond(response);
+      ctrl = scope.$new(DetailCtrl);
+    });
+
+    it('should load phone data', function() {
+      expect(ctrl.phone).toEqualAsynchronousData(response);
+    });
+
+    it('should set default image to 0', function() {
+      expect(ctrl.selectedImg).toEqual(0);
+    });
+    
+    it('should change image', function() {
+      ctrl.selectImg(2);
+      expect(ctrl.selectedImg).toEqual(2);
+    });
+  });
+
+  describe('catalog', function() {
+    beforeEach(function() {
+      response = [{id: 1}, {id: 2}];
+      browser.xhr.expectGET('/app/phones/all.json').respond(response);
+      ctrl = scope.$new(CatalogCtrl);
+    });
+
+    it('should load phones', function() {
+      expect(ctrl.phones).toEqualAsynchronousData(response);
+    });
+
+    it('should set default orderField to age', function() {
+      expect(ctrl.orderField).toEqual('age');
     });
   });
 });

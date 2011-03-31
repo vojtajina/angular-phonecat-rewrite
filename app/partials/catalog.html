@@ -22,12 +22,6 @@
   <li ng:repeat="phone in phones.$filter(predicate).$orderBy(orderField)">
     <a href="#/phones/{{phone.id}}">{{phone.name}}</a>
     <a href="#/phones/{{phone.id}}" class="thumb"><img ng:src="{{phone.imageUrl}}"/></a>
-    <div class="favorite">
-      [
-	    <a href="" ng:hide="favorites.has(phone.id)" ng:click="favorites.add(phone.id)">mark favorite</a>
-	    <a href="" ng:show="favorites.has(phone.id)" ng:click="favorites.remove(phone.id)">remove favorite</a>
-	    ]
-    </div>
     <p>{{phone.snippet}}</p>
     <div class="clear"></div>
   </li>

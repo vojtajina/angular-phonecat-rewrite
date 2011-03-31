@@ -1,17 +1,15 @@
 <!doctype html>
-<html xmlns:ng="http://angularjs.org/">
+<html xmlns:ng="http://angularjs.org/" ng:controller="MainCtrl">
 <head>
-  <title>Angular App</title>
+  <title>Angular App: Phone Catalog</title>
   <link rel="stylesheet" href="css/phonecat.css">
 </head>
 <body style="display:none;" ng:show="true">
   <div class="linkbar">
-    [ <a href="#/phones/">phones</a> 
-    | <a href="#/favorites">favorites</a> 
-    ]
+    [ <a href="#/phones/">phones</a> ]
   </div>
-  <ng:include src="$route.current.template" scope="$route.current.scope"></ng:include>
-  
+  <ng:include src="currentRoute.template" scope="currentRoute.scope"></ng:include>
+
   <script src="lib/angular/angular.js" ng:autobind></script>
   <script src="js/services.js"></script>
   <script src="js/controllers.js"></script>
