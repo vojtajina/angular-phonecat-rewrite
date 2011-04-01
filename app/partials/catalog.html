@@ -2,8 +2,8 @@
   <li>
     Sort by:
     <ul>
-      <li><a href="" ng:click="orderField = 'age'">Newest</a></li>
-      <li><a href="" ng:click="orderField = 'name'">Alphabetical</a></li>
+      <li><a href="" ng:click="orderField = 'age'" id="sort-age">Newest</a></li>
+      <li><a href="" ng:click="orderField = 'name'" id="sort-name">Alphabetical</a></li>
     </ul>
   </li>
   <li>
@@ -13,14 +13,14 @@
     Carrier:
       <ul class="carrier">
         <li ng:repeat="carrier in ['', 'AT&amp;T', 'Cellular South', 'Sprint', 'T-Mobile', 'US Cellular', 'Verizon']">
-		      <a href="" ng:click="predicate.carrier = carrier">{{carrier||'any'}}</a>
+		  <a href="" ng:click="predicate.carrier = carrier">{{carrier||'any'}}</a>
         </li>
       </ul>
   </li>
 </ul>
 <ul class="phones">
-  <li ng:repeat="phone in phones.$filter(predicate).$orderBy(orderField)">
-    <a href="#/phones/{{phone.id}}">{{phone.name}}</a>
+  <li ng:repeat="phone in phones.$filter(predicate).$orderBy(orderField)" id="phone-{{phone.id}}">
+    <a href="#/phones/{{phone.id}}" class="title">{{phone.name}}</a>
     <a href="#/phones/{{phone.id}}" class="thumb"><img ng:src="{{phone.imageUrl}}"/></a>
     <p>{{phone.snippet}}</p>
     <div class="clear"></div>
