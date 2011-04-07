@@ -1,5 +1,9 @@
 describe('phonecat app', function() {
 
+  function phone(selector) {
+    return element('ng\\:include ul.phones li' + selector);
+  }
+
   beforeEach(function() {
     browser().navigateTo('../../app/index.html');
   });
@@ -30,26 +34,26 @@ describe('phonecat app', function() {
     });
 
     it('image should be link to phone detail', function() {
-      element('ng\\:include ul.phones li#phone-nexus-s a.thumb').click();
+      phone('#phone-nexus-s a.thumb').click();
       expect(browser().location().hash()).toBe("/phones/nexus-s");
     });
 
     it('title should be link to phone detail', function() {
-      element('ng\\:include ul.phones li#phone-nexus-s a.title').click();
+      phone('#phone-nexus-s a.title').click();
       expect(browser().location().hash()).toBe("/phones/nexus-s");
     });
 
     describe('sorting', function() {
       it('should sort by age', function() {
         element('#sort-age', 'Sort by newest link').click();
-        expect(element('ng\\:include ul.phones li:first').attr('id')).toEqual('phone-nexus-s');
-        expect(element('ng\\:include ul.phones li:last').attr('id')).toEqual('phone-htc-mytouch');
+        expect(phone(':first').attr('id')).toEqual('phone-nexus-s');
+        expect(phone(':last').attr('id')).toEqual('phone-htc-mytouch');
       });
 
       it('should sort by name', function() {
         element('#sort-name', 'Sort by alphabet link').click();
-        expect(element('ng\\:include ul.phones li:first').attr('id')).toEqual('phone-dell-streak');
-        expect(element('ng\\:include ul.phones li:last').attr('id')).toEqual('phone-t-mobile-mytouch-4g');
+        expect(phone(':first').attr('id')).toEqual('phone-dell-streak');
+        expect(phone(':last').attr('id')).toEqual('phone-t-mobile-mytouch-4g');
       });
     });
 
@@ -67,6 +71,15 @@ describe('phonecat app', function() {
   });
 
   describe('detail', function() {
+
+    function phoneThumb(selector) {
+      return element('ng\\:include ul.phone-thumbs li' + selector);
+    }
+
+    function phoneImage() {
+      return element('ng\\:include img.phone');
+    }
+
     beforeEach(function() {
       browser().navigateTo('#/phones/nexus-s');
     });
@@ -78,12 +91,12 @@ describe('phonecat app', function() {
     });
 
     it('should display default image', function() {
-      expect(element('ng\\:include img.phone').attr('src')).toEqual('http://www.google.com/phone/image/medium/709001');
+      expect(phoneImage().attr('src')).toEqual('http://www.google.com/phone/image/medium/709001');
     });
 
     it('should change the image', function() {
-      element('ng\\:include ul.phone-thumbs li:last a').click();
-      expect(element('ng\\:include img.phone').attr('src')).toEqual('http://www.google.com/phone/image/medium/712001');
+      phoneThumb(':last a').click();
+      expect(phoneImage().attr('src')).toEqual('http://www.google.com/phone/image/medium/712001');
     });
   });
 });
