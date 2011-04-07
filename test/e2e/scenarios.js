@@ -4,18 +4,19 @@ describe('phonecat app', function() {
     return element('ng\\:include ul.phones li' + selector);
   }
 
-  beforeEach(function() {
-    browser().navigateTo('../../app/index.html');
-  });
+  function navigateTo(url) {
+    browser().navigateTo('../../app/index.html' + url);
+  }
 
   it('should automatically redirect to catalog (/phones/) when location hash/fragment is empty', function() {
+    navigateTo('');
     expect(browser().location().hash()).toBe("/phones/");
   });
 
   describe('catalog', function() {
 
     beforeEach(function() {
-      browser().navigateTo('#/phones/');
+      navigateTo('#/phones/');
     });
 
     function numberOfPhones() {
@@ -81,7 +82,7 @@ describe('phonecat app', function() {
     }
 
     beforeEach(function() {
-      browser().navigateTo('#/phones/nexus-s');
+      navigateTo('#/phones/nexus-s');
     });
 
     it('should display phone details', function() {
