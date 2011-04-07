@@ -34,9 +34,10 @@ CatalogCtrl.$inject = ['resourceCatalog'];
 function DetailCtrl(resource) {
   this.phone = resource.get({phoneId: this.params.phoneId});
   this.selectedImg = 0;
-  this.selectImg = function(index) {
-    this.selectedImg = index;
-  };
 }
+
+DetailCtrl.prototype.selectImg = function(index) {
+  this.selectedImg = index;
+};
 
 DetailCtrl.$inject = ['resourceDetail'];

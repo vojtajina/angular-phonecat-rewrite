@@ -71,5 +71,19 @@ describe('phonecat app', function() {
       browser().navigateTo('#/phones/nexus-s');
     });
 
+    it('should display phone details', function() {
+      var content = element('ng\\:include').text(); 
+      expect(content).toMatch(/Nexus S/);      
+      expect(content).toMatch(/Nexus S is the next generation of Nexus devices/);
+    });
+
+    it('should display default image', function() {
+      expect(element('ng\\:include img.phone').attr('src')).toEqual('http://www.google.com/phone/image/medium/709001');
+    });
+
+    it('should change the image', function() {
+      element('ng\\:include ul.phone-thumbs li:last a').click();
+      expect(element('ng\\:include img.phone').attr('src')).toEqual('http://www.google.com/phone/image/medium/712001');
+    });
   });
 });
